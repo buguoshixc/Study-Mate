@@ -137,7 +137,8 @@ function startHost(workspace, state, reads) {
     节点: NODE_ID,
     课件: LESSON_FILE,
     最后写入: new Date().toISOString(),
-    标: state.items,
+    // 回执/落盘形状：`标` 是「标注 id → 标注」的 Record（阅读端收到后自己归一成数组）
+    标: Object.fromEntries(state.items.map((one) => [one.id, one])),
   });
   const receiptOf = (version) => ({
     ok: true,

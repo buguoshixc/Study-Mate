@@ -335,16 +335,28 @@ test('annotationsFromPayload：有字段按 {present,version,items} 读；老 pa
   assert.deepEqual(client.annotationsFromPayload(null), { present: false, version: '', items: [] });
 });
 
-test('annotationsFromReceipt：回执的「标」那一层 → items，version 原样', () => {
+test('annotationsFromReceipt：回执的「标」是落盘 Record（id → 标注）→ 读回数组，version 原样', () => {
   const receipt = client.annotationsFromReceipt('n1', {
     ok: true,
-    version: 'v2',
-    annotations: { 节点: 'n1', 课件: 'lessons/x.md', 最后写入: 't', 标: [{ id: 'a1', note: 'x', ranges: [] }] },
+    version: '0123456789abcdef',
+    annotations: {
+      节点: 'n1', 课件: 'lessons/x.md', 幂等键: 'op-1', 最后写入: 't',
+      标: { a1: { id: 'a1', note: 'x', ranges: [] }, a2: { id: 'a2', note: 'y', ranges: [] } },
+    },
   });
-  assert.equal(receipt.version, 'v2');
-  assert.equal(receipt.items.length, 1);
-  assert.equal(receipt.items[0].id, 'a1');
+  assert.equal(receipt.version, '0123456789abcdef');
+  assert.deepEqual(receipt.items.map((one) => one.id), ['a1', 'a2'], 'Record → 数组，顺序稳定');
+  assert.equal(receipt.present, true);
+  // 也接受数组形状（测试夹具 / 更早的回执）——两种都归一成数组
+  const fromArray = client.annotationsFromReceipt('n1', { ok: true, version: 'v2', annotations: { 标: [{ id: 'a1', note: 'x', ranges: [] }] } });
+  assert.deepEqual(fromArray.items.map((one) => one.id), ['a1']);
+  // 清空过：present:true + 空 Record
+  const cleared = client.annotationsFromReceipt('n1', { ok: true, version: 'v3', annotations: { 标: {} } });
+  assert.equal(cleared.present, true);
+  assert.deepEqual(cleared.items, []);
+  // 没有这一格（老回执）：present:false + 空数组
   const empty = client.annotationsFromReceipt('n1', { ok: true, version: 'v3' });
+  assert.equal(empty.present, false);
   assert.deepEqual(empty.items, []);
 });
 

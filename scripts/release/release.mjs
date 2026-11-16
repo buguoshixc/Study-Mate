@@ -208,7 +208,7 @@ export function validatePack(pack) {
       throw new Error(`Unexpected or private file in npm tarball: ${file}`);
     }
   }
-  for (const required of ['cordis.patch.yml', 'bin/dsh-plugin.ts', 'bin/studymate.mjs', 'bin/skill-compat.mjs', 'bin/openai-plugin.mjs', 'bin/openai-skill-compat.mjs', 'lib/preset.ts', 'locale/en.json', 'locale/zh.json', 'docs/images/icon.png', 'openai/studymate/.codex-plugin/plugin.json', 'docs/使用/Codex与ChatGPT.md', 'preset/learning/agent.cordis.yml', 'preset/qa/agent.cordis.yml', 'preset/skills/learning-system/SKILL.md', 'antigravity/studymate/plugin.json']) {
+  for (const required of ['cordis.patch.yml', 'bin/dsh-plugin.ts', 'bin/studymate.mjs', 'bin/skill-compat.mjs', 'bin/openai-plugin.mjs', 'bin/openai-skill-compat.mjs', 'lib/preset.ts', 'locale/en.json', 'locale/zh.json', 'docs/images/logo.png', 'openai/studymate/.codex-plugin/plugin.json', 'docs/使用/Codex与ChatGPT.md', 'preset/learning/agent.cordis.yml', 'preset/qa/agent.cordis.yml', 'preset/skills/learning-system/SKILL.md', 'antigravity/studymate/plugin.json']) {
     if (!files.includes(required)) throw new Error(`npm tarball is missing ${required}.`);
   }
   for (const prefix of ['schemas/', 'templates/', 'docs/', 'locale/']) if (!files.some(file => file.startsWith(prefix))) throw new Error(`npm tarball is missing ${prefix}.`);
